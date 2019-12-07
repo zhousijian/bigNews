@@ -15,6 +15,13 @@
   <script src="./libs/jquery-1.12.4.min.js"></script>
   <!-- 引入bootstrap的js文件 -->
   <script src="./libs/bootstrap/js/bootstrap.min.js"></script>
+  <script src="./js/http.js"></script>
+  <style>
+  .modal-content {
+    margin: 0 auto;
+    width: 400px;
+  }
+  </style>
 </head>
 
 <body>
@@ -38,6 +45,54 @@
     </div>
   </div>
 
-</body>
 
+  <!-- 模态框 -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">温馨提示</h4>
+            </div>
+            <div class="modal-body">在这里添加一些文本</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" style="background-color: skyblue;" >确认</button>
+                <!-- <button type="button" class="btn btn-primary">提交更改</button> -->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+</body>
+<script>
+
+  $('.input_sub').on('click',function(e){
+    let userName = $('.input_txt').val().trim();
+    let password = $('.input_pass').val().trim();
+    e.preventDefault();
+    if(userName == '' || password == ''){
+      $('.modal-body').text('账号和密码不能为空');
+      $('#myModal').modal();
+      return;
+    }
+    $.ajax({
+      url : BigNew.user_login,
+      type : 'post',
+      data : {
+        username : userName,
+        password : password
+      },
+      success : function(res){
+        console.log(res);
+        localStorage.setItem('token',res.token);
+        $('.modal-body').text(res.msg)
+        $('#myModal').modal();
+        if(res.code === 200){
+          $('#myModal').on('hide.bs.modal',function(){
+          location.href = './index.html'
+          })
+        }
+      }
+    })
+  })
+</script>
 </html>
