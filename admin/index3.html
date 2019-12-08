@@ -111,7 +111,7 @@
                 <div class="modal-body">在这里添加一些文本</div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal" style="background-color: red;" >确认</button>
-                    <button type="button" class="btn btn-primary" style="background-color: snow;color: #000;">取消</button>
+                    <button type="button" class="btn btn-primary" style="background-color: white;color: #000;">取消</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal -->
@@ -128,5 +128,18 @@
       }
     })
 
+    $('.logout').on('click',function(){
+      $('#myModal2 .modal-body').text('你确定要退出吗？');
+      $('#myModal2').modal();
+    })
+
+    $('#myModal2 .btn-default').on('click',function(){
+      localStorage.removeItem('token');
+      location.href = './login3.html'
+    })
+
+    $('#myModal2 .btn-primary').on('click',function(){
+      $('#myModal2').modal('hide')
+    })
   </script>
 </html>
