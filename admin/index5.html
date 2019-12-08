@@ -128,5 +128,16 @@
     }
   })
   
+  $('.logout').on('click',function(){
+    $('#myModal2 .modal-body').text('你确定要退出吗？');
+    $('#myModal2').modal();
+  })
+  $('#myModal2 .btn-primary').on('click',function(){
+    $('#myModal2').modal('hide');
+  })
+  $('#myModal2 .btn-default').on('click',function(){
+    localStorage.removeItem('token');
+    location.href = './login5.html';
+  })
   </script>
 </html>
