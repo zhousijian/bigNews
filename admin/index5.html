@@ -26,32 +26,32 @@
       <!-- 左侧导航栏 -->
       <div class="menu">
         <div class="level01 active">
-          <a href="#" target="main_frame"
+          <a href="./main_count.html" target="main_frame"
             ><i class="iconfont icon-yidiandiantubiao04"></i
             ><span>首页</span></a
           >
         </div>
         <div class="level01">
-          <a href="#"
+          <a href="./article_list.html" target="main_frame"
             ><i class="iconfont icon-icon-article"></i><span>文章管理</span
             ><b class="iconfont icon-arrowdownl"></b
           ></a>
         </div>
         <ul class="level02">
           <li>
-            <a href="#" target="main_frame"
+            <a href="./article_list.html" target="main_frame"
               ><i class="iconfont icon-previewright"></i
               ><span>文章列表</span></a
             >
           </li>
           <li>
-            <a href="#" target="main_frame"
+            <a href="./article_release.html" target="main_frame"
               ><i class="iconfont icon-previewright"></i
               ><span>发表文章</span></a
             >
           </li>
           <li>
-            <a href="#" target="main_frame"
+            <a href="./article_category.html" target="main_frame"
               ><i class="iconfont icon-previewright"></i
               ><span>文章类别管理</span></a
             >
@@ -59,12 +59,12 @@
         </ul>
 
         <div class="level01">
-          <a href="#" target="main_frame"
+          <a href="./comment_list.html" target="main_frame"
             ><i class="iconfont icon-comment"></i><span>评论管理</span></a
           >
         </div>
         <div class="level01" id="user">
-          <a href="#" target="main_frame"
+          <a href="./user.html" target="main_frame"
             ><i class="iconfont icon-user"></i><span>个人中心</span></a
           >
         </div>
@@ -80,7 +80,9 @@
         </div>
       </div>
       <!-- 右侧主体内容 -->
-      <div class="main" id="main_body"></div>
+      <div class="main" id="main_body">
+        <iframe src="./main_count.html" frameborder="0" name="main_frame" style="width: 100%;height: 100%;"></iframe>
+      </div>
     </div>
 
      <!-- 模态框 -->
@@ -139,5 +141,25 @@
     localStorage.removeItem('token');
     location.href = './login5.html';
   })
+
+  $('.level01').on('click',function(){
+    $(this).addClass('active').siblings().removeClass('active');
+    if($(this).index() == 1){
+      $(this).next().slideToggle();
+      $(this).next().children('li:first-child').addClass('active');
+      // 或者用下面的方法
+      // a标签模拟点击事件需要使用原生DOM原生调用 click（）方法；jquery对象是无法调用的，所以在这里我们获取到a标签的jquery对象要转换为原生的对象，再去调用click（）这个方法
+      $(this).find('b').toggleClass('rotate0')
+
+    }else{
+      $(this).siblings('ul').slideUp();
+    }
+  })
+
+  $('.level02 li').on('click',function(){
+    $(this).addClass('active').siblings().removeClass('active');
+  })
+
+
   </script>
 </html>
