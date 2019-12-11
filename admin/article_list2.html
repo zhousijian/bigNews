@@ -145,7 +145,7 @@
               }else if(res.data.data.length == 0 && res.data.totalPage == 0){
                 $('#pagination-demo').hide();
                 $('#tips').show();
-              }else if(res.data.data.length == 0 && res.data.totalPage > 1){
+              }else if(res.data.data.length == 0 && res.data.totalPage > 0){
                 mypage = page - 1;
                 // callback(res)
                 getData(mypage,function(res){
