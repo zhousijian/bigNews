@@ -225,7 +225,7 @@
             success: function(res) {
               if (res.code === 204) {
                 getData(mypage, function(res) {
-                  console.log(res);
+                  // console.log(res);
                     $("#pagination-demo").twbsPagination(
                       "changeTotalPages",
                       res.data.totalPage,
