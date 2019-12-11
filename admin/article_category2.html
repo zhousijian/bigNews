@@ -130,34 +130,119 @@
         <td>{{$value.slug}}</td>
         <td class="text-center">
           <a href="javascript:void(0)" data-id="{{$value.id}}" data-toggle="modal" class=" btn btn-info btn-xs" data-target="#myModal">编辑</a>
-          <a href="javascript:void(0)" data-id="{{$value.id}}" class="btn btn-danger btn-xs">删除</a>
+          <a href="javascript:void(0)" data-id="{{$value.id}}" class="btn btn-danger btn-xs" id="delete">删除</a>
         </td>
       </tr>
     {{/each}}
   </script>
   <script>
-    $(function(){
-      $.get({
-        url : BigNew.category_list,
-        success : function(res){
-          // console.log(res);
-          let html = template('th',res);
-          $('tbody').html(html);
+    $(function() {
+      function getData() {
+        $.get({
+          url: BigNew.category_list,
+          success: function(res) {
+            // console.log(res);
+            let html = template("th", res);
+            $("tbody").html(html);
+          }
+        });
+      }
+
+      getData();
+
+      // 当点击模态框取消按钮的时候，将表单中的数据全部重置
+      $('#btn-cancel').on('click',function(){
+        $('form')[0].reset();
+      })
+
+      // 当模态框在显示的时候，我们需要知道是哪一个按钮被点击了
+      $("#myModal").on("show.bs.modal", function(e) {
+        // e.relatedTarget 获取到的就是触发这个模态框显示的dom元素
+        let asd = e.relatedTarget;
+        // console.log(asd);
+
+        if (asd == $("#xinzengfenlei")[0]) {
+          $("form")[0].reset();
+          $("#exampleModalLabel").text("新增文章分类");
+          $("#btn-confirm").text("新增").addClass('btn-success').removeClass('btn-primary');
+          $("#btn-confirm").on("click", function() {
+            if($("#recipient-name").val() == '' || $("#message-text").val() == ''){
+              alert('请填写数据');
+              return;
+            }
+            $.post({
+              url: BigNew.category_add,
+              data: {
+                name: $("#recipient-name").val(),
+                slug: $("#message-text").val()
+              },
+              success: function(res) {
+                // console.log(res);
+                if (res.code == 201) {
+                  getData();
+                  $('#myModal').modal('hide')
+                }
+              }
+            });
+          });
+        } else {
+          $("#exampleModalLabel").text("编辑文章分类");
+          $("#btn-confirm").text("编辑").addClass('btn-primary').removeClass('btn-success');
+          // 当弹出编辑的模态框的时候，需要得到一个文章类别id，根据这个id，发送ajax请求获得具体的文章类别信息
+          let id = $(asd).attr('data-id')
+          // console.log(id);
+          $.get({
+            url : BigNew.category_search,
+            data : { id : id },
+            success : function(res){
+              console.log(res);
+              $('#recipient-name').val(res.data[0].name);
+              $('#message-text').val(res.data[0].slug)
+              // 如果这里无法获取到id，就需要把获得的id存到隐藏域里面去
+              // $('#cateid').val(res.data[0].id);
+              $('#btn-confirm').on('click',function(){
+                $.post({
+                  url : BigNew.category_edit,
+                  data : {
+                    id : id,
+                    name : $('#recipient-name').val(),
+                    slug : $('#message-text').val()
+                  },
+                  success : function(res){
+                    // console.log(res);
+                    if(res.code == 200){
+                      $('#myModal').modal('hide')
+                      getData();
+                    }
+                    
+                  }
+                })
+              })
+            }
+          })
+        }
+      });
+
+      $('tbody').on('click','#delete',function(){
+        // console.log($(this).attr('data-id'));
+        
+        if(confirm('你确定要删除吗？')){
+          $.post({
+            url : BigNew.category_delete,
+            data : {
+              id : $(this).attr('data-id')
+            },
+            success : function(res){
+              // console.log(res);
+              if(res.code == 204){
+                getData();
+              }
+              
+            }
+          })
+          
         }
       })
-
-      $('#myModal').on('show.bs.modal',function(e){
-        let asd = e.relatedTarget;
-        console.log(asd);
-      })
-
-
-
-
-
-
-
-
-    })
+    });
   </script>
 </html>
