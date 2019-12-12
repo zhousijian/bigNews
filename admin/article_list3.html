@@ -143,10 +143,10 @@
             $('#pagination-demo').hide();
           }else if(res.data.data.length == 0 && res.data.totalPage > 0){
             mypage = page - 1;
-            getData(mypage,function(res){
+            // getData(mypage,function(res){
               // mypage = page - 1;
               $('#pagination-demo').twbsPagination('changeTotalPages',res.data.totalPage,mypage)
-            })
+            // })
           }
         }
       })
