@@ -18,7 +18,7 @@
     <!-- 引入时间插件的js文件 -->
     <script src="./libs/jedate/js/jedate.js"></script>
     <!-- 引入富文本编辑器的js文件 -->
-    <script src="./libs/wangEditor.js"></script>
+    <script src="./libs/wangEditor.min.js"></script>
     <!-- 模板引擎 -->
     <script src="./libs/template-web.js"></script>
 </head>
@@ -98,14 +98,11 @@
             minDate : '2014-09-19 00:00:00',
             zIndex : 30000
         })
-
         // 添加富文本编辑器
         let E = window.wangEditor;
         let editor = new E('#editor');
         // 或者 var editor = new E( document.getElementById('editor') )
         editor.create();
-
-
         // 先获取文章类别，渲染到页面上
         $.get({
             url : BigNew.category_list,
@@ -116,8 +113,6 @@
                 
             }
         })
-
-
         // 根据不同的文章的id获取到文章的具体数据，然后将数据渲染到页面上
         let id = location.search.substring(4);
         // console.log(id);
@@ -135,7 +130,6 @@
             }
         })
         
-
         // 选取图片
         $('#inputCover').on('change',function(e){
             let file = this.files[0]
@@ -143,7 +137,6 @@
             let url = URL.createObjectURL(file);
             $('.article_cover').attr('src',url);   
         })
-
         // 封装
         function getData(state){
             let form = $('#form')[0];
@@ -165,7 +158,6 @@
                 }
             })
         }
-
         // 点击发布
         $('button.btn-edit').on('click',function(e){
             e.preventDefault();
@@ -189,7 +181,6 @@
             // })
             getData('已发布')
         })
-
         // 点击存为草稿
         $('button.btn-draft').on('click',function(e){
             e.preventDefault();
@@ -211,13 +202,9 @@
             //         }
             //     }
             // })
-
             getData('草稿')
         })
-
-
     })
-
 </script>
 
 </html>
