@@ -10,8 +10,15 @@
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/iconfont.css">
     <link rel="stylesheet" href="css/main.css">
+    <!-- 引入时间插件css两个 -->
+    <link rel="stylesheet" href="./libs/jedate/css/jeDate-test.css">
+    <link rel="stylesheet" href="./libs/jedate/css/jedate.css">
     <!-- jq -->
-    <script src="./libs/jquery-1.12.4.min.js"></script>
+    <script src="../js/jquery-1.12.4.min.js"></script>
+    <!-- 引入时间插件的js文件 -->
+    <script src="./libs/jedate/js/jedate.js"></script>
+    <!-- 引入富文本编辑器的js文件 -->
+    <script src="./libs/wangEditor.js"></script>
     <!-- 模板引擎 -->
     <script src="./libs/template-web.js"></script>
 </head>
@@ -40,23 +47,29 @@
                     <label for="inputCategory" class="col-sm-2 control-label">文章类别：</label>
                     <div class="col-sm-4">
                         <select class="form-control category" name="categoryId">
-                            <option>类别一</option>
+                            <!-- <option>类别一</option>
                             <option>类别二</option>
                             <option>类别三</option>
                             <option selected>类别四</option>
-                            <option>类别五</option>
+                            <option>类别五</option> -->
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">发布时间：</label>
-                    <div class="col-sm-4">
+                    <div class="jeinpbox col-sm-4">
+                        <input type="text" class="jeinput"id="testico" placeholder="YYYY-MM-DD"name="date">
+                        <div class="icons jebtns" onclick="jeDate('#testico',{trigger:false,format:'YYYY-MM-DD',zIndex:30000})">
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章内容：</label>
-                    <div class="col-sm-10">
+                    <div id="editor" class="col-sm-8">
+                        <p>请尽情的展示的文采</p>
                     </div>
+                    <!-- <div class="col-sm-10">
+                    </div> -->
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
@@ -68,5 +81,143 @@
         </div>
     </div>
 </body>
+<script src="./js/http.js"></script>
+<script type="text/html" id="th">
+    {{each $data v}}
+    <option value="{{v.id}}">{{v.name}}</option>
+    {{/each}}
+</script>
+
+<script>
+    $(function(){
+        // 添加日期插件
+        // 添加这个方法的目的是为了让日期插件在点击输入框的时候也能关联到日期
+        jeDate('#testico',{
+            format : "YYYY-MM-DD",
+            isTime : false,
+            minDate : '2014-09-19 00:00:00',
+            zIndex : 30000
+        })
+
+        // 添加富文本编辑器
+        let E = window.wangEditor;
+        let editor = new E('#editor');
+        // 或者 var editor = new E( document.getElementById('editor') )
+        editor.create();
+
+
+        // 先获取文章类别，渲染到页面上
+        $.get({
+            url : BigNew.category_list,
+            success : function(res){
+                // console.log(res);
+                let html = template('th',res.data)
+                $('.category').html(html)
+                
+            }
+        })
+
+
+        // 根据不同的文章的id获取到文章的具体数据，然后将数据渲染到页面上
+        let id = location.search.substring(4);
+        // console.log(id);
+        $.get({
+            url : BigNew.article_search,
+            data : { id : id },
+            success : function(res){
+                // console.log(res);
+                $('.title').val(res.data.title);
+                $('.article_cover').attr('src',res.data.cover);
+                $('.category').val(res.data.categoryId);
+                $('#testico').val(res.data.date);
+                // 这是富文本设置内容或者是获取内容的方法
+                editor.txt.html(res.data.content);
+            }
+        })
+        
+
+        // 选取图片
+        $('#inputCover').on('change',function(e){
+            let file = this.files[0]
+            // console.log(file);
+            let url = URL.createObjectURL(file);
+            $('.article_cover').attr('src',url);   
+        })
+
+        // 封装
+        function getData(state){
+            let form = $('#form')[0];
+            // console.log(form);
+            let fd = new FormData(form);
+            fd.append('id',id);
+            fd.append('content',editor.txt.html());
+            fd.append('state',state)
+            $.post({
+                url : BigNew.article_edit,
+                data : fd,
+                processData : false,
+                contentType : false,
+                success : function(res){
+                    // console.log(res);
+                    if(res.code == 200){
+                        window.history.back();
+                    }
+                }
+            })
+        }
+
+        // 点击发布
+        $('button.btn-edit').on('click',function(e){
+            e.preventDefault();
+            // let form = $('#form')[0];
+            // // console.log(form);
+            // let fd = new FormData(form);
+            // fd.append('id',id);
+            // fd.append('content',editor.txt.html());
+            // fd.append('state','已发布')
+            // $.post({
+            //     url : BigNew.article_edit,
+            //     data : fd,
+            //     processData : false,
+            //     contentType : false,
+            //     success : function(res){
+            //         // console.log(res);
+            //         if(res.code == 200){
+            //             window.history.back();
+            //         }
+            //     }
+            // })
+            getData('已发布')
+        })
+
+        // 点击存为草稿
+        $('button.btn-draft').on('click',function(e){
+            e.preventDefault();
+            // let form = $('#form')[0];
+            // // console.log(form);
+            // let fd = new FormData(form);
+            // fd.append('id',id);
+            // fd.append('content',editor.txt.html());
+            // // fd.append('state','已发布')
+            // $.post({
+            //     url : BigNew.article_edit,
+            //     data : fd,
+            //     processData : false,
+            //     contentType : false,
+            //     success : function(res){
+            //         // console.log(res);
+            //         if(res.code == 200){
+            //             window.history.back();
+            //         }
+            //     }
+            // })
+
+            getData('草稿')
+        })
+
+
+    })
+
+</script>
 
 </html>
